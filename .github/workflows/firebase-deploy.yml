@@ -15,13 +15,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Google Auth
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-
       - name: Setup Firebase CLI
         uses: w9jds/setup-firebase@v1
+
+      - name: Authenticate with Service Account
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/service-account.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/service-account.json" >> $GITHUB_ENV
 
       - name: Deploy Firestore Rules & Indexes
         run: firebase deploy --only firestore --project pepe-2026
