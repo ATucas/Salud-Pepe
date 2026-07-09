@@ -24,11 +24,28 @@ jobs:
 
       - uses: google-github-actions/setup-gcloud@v2
 
-      - name: Install firebase-tools
-        run: npm install -g firebase-tools
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
       - name: Deploy
         run: |
-          TOKEN=$(gcloud auth print-access-token --project=pepe-2026)
-          echo "Token obtenido: ${TOKEN:0:20}..."
-          npx firebase-tools deploy --only firestore --project pepe-2026 --non-interactive --token "$TOKEN"
+          set -e
+          echo "--- Verifying gcloud ---"
+          gcloud auth list --format=json | head -5
+          gcloud config get-value project
+
+          echo "--- Getting token ---"
+          TOKEN=$(gcloud auth print-access-token)
+          echo "Token: ${TOKEN:0:20}..."
+
+          echo "--- Installing firebase-tools ---"
+          npm install -g firebase-tools@latest 2>&1 | tail -3
+
+          echo "--- Which firebase ---"
+          which firebase || echo "not found"
+          npx --yes firebase-tools --version
+
+          echo "--- Deploying rules ---"
+          npx --yes firebase-tools deploy --only firestore --project pepe-2026 --non-interactive --token "$TOKEN" 2>&1
+          echo "EXIT CODE: $?"
