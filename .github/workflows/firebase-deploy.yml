@@ -8,8 +8,6 @@ on:
       - 'firestore.indexes.json'
       - 'firebase.json'
   workflow_dispatch:
-  push:
-    branches: [main]
 
 jobs:
   deploy:
