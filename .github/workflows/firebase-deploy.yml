@@ -1,0 +1,24 @@
+name: Deploy Firebase Rules
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'firestore.rules'
+      - 'firestore.indexes.json'
+      - 'firebase.json'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Firebase CLI
+        uses: w9jds/setup-firebase@v1
+        with:
+          firebase_token: ${{ secrets.FIREBASE_TOKEN }}
+
+      - name: Deploy Firestore Rules & Indexes
+        run: firebase deploy --only firestore --project pepe-2026
