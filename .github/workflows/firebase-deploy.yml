@@ -22,18 +22,24 @@ jobs:
         env:
           SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          set -e
-          # Write service account using base64 to preserve formatting
-          echo "$SA" | node -e "
-            const fs = require('fs');
-            const sa = JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));
-            fs.writeFileSync('/tmp/sa.json', JSON.stringify(sa));
-            console.log('SA OK:', sa.client_email);
-          "
+          set -e -x
+          # Write service account
+          echo "--- Writing service account ---"
+          echo "$SA" > /tmp/sa.json
 
           # Install firebase-tools
-          npm install -g firebase-tools 2>&1 | tail -1
+          echo "--- Installing firebase-tools ---"
+          npm install -g firebase-tools 2>&1
 
-          # Deploy using ADC
+          # Explicitly set auth
+          echo "--- Setting up auth ---"
+          export CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE=/tmp/sa.json
           export GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json
+
+          # Verify
+          echo "--- Checking project ---"
+          npx firebase-tools projects:list --non-interactive 2>&1 || echo "list failed"
+
+          # Deploy
+          echo "--- Deploying rules ---"
           npx firebase-tools deploy --only firestore --project pepe-2026 --non-interactive 2>&1
