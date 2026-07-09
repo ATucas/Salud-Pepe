@@ -1,5 +1,4 @@
 {
   "indexes": [],
-  "fieldOverrides": [],
-  "__note": "Indices para Firestore - vacio por ahora"
+  "fieldOverrides": []
 }
