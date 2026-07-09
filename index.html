@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#2D8B7F">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Salud Pepe">
+  <title>Salud Pepe</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ===== PANTALLA DE CARGA ===== -->
+  <div id="splash" class="splash">
+    <div class="splash-content">
+      <div class="splash-icon">❤️</div>
+      <h1>Salud Pepe</h1>
+      <p class="splash-sub">Tu control de salud diario</p>
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <!-- ===== APP ===== -->
+  <div id="app" class="app hidden">
+
+    <!-- HEADER -->
+    <header class="app-header" id="appHeader">
+      <div class="header-title">
+        <span id="headerIcon">📊</span>
+        <h1 id="headerTitle">Resumen</h1>
+      </div>
+      <button class="header-btn" id="configBtn" aria-label="Configuración">⚙️</button>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="app-content" id="appContent">
+
+      <!-- ===== PÁGINA: DASHBOARD ===== -->
+      <section class="page active" id="page-dashboard">
+        <div class="greeting" id="greeting">
+          <span class="greeting-icon">👋</span>
+          <div>
+            <p class="greeting-title">¡Hola Pepe!</p>
+            <p class="greeting-date" id="todayDate"></p>
+          </div>
+        </div>
+
+        <div class="summary-cards" id="summaryCards">
+          <div class="summary-card card-glucose" onclick="navigateTo('glucose')">
+            <div class="card-icon">🩸</div>
+            <div class="card-info">
+              <span class="card-label">Glucosa</span>
+              <span class="card-value" id="dashGlucose">-- mg/dL</span>
+              <span class="card-sub" id="dashGlucoseTime">Sin registro hoy</span>
+            </div>
+            <div class="card-trend" id="dashGlucoseTrend"></div>
+          </div>
+
+          <div class="summary-card card-temp" onclick="navigateTo('vitals')">
+            <div class="card-icon">🌡️</div>
+            <div class="card-info">
+              <span class="card-label">Temperatura</span>
+              <span class="card-value" id="dashTemp">-- °C</span>
+              <span class="card-sub" id="dashTempTime">Sin registro hoy</span>
+            </div>
+          </div>
+
+          <div class="summary-card card-oxygen" onclick="navigateTo('vitals')">
+            <div class="card-icon">🫁</div>
+            <div class="card-info">
+              <span class="card-label">Oxigenación</span>
+              <span class="card-value" id="dashOxygen">-- %</span>
+              <span class="card-sub" id="dashOxygenTime">Sin registro hoy</span>
+            </div>
+          </div>
+
+          <div class="summary-card card-meds" onclick="navigateTo('meds')">
+            <div class="card-icon">💊</div>
+            <div class="card-info">
+              <span class="card-label">Próximo medicamento</span>
+              <span class="card-value" id="dashNextMed">--</span>
+              <span class="card-sub" id="dashNextMedTime">--</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-actions">
+          <button class="action-btn big-btn" onclick="navigateTo('glucose')">
+            <span>🩸</span> Registrar Glucosa
+          </button>
+          <button class="action-btn big-btn" onclick="navigateTo('meds')">
+            <span>💊</span> Mis Medicamentos
+          </button>
+          <button class="action-btn big-btn" onclick="navigateTo('vitals')">
+            <span>🌡️</span> Temperatura / Oxígeno
+          </button>
+        </div>
+
+        <!-- Mini gráfico de glucosa -->
+        <div class="chart-section" id="chartSection">
+          <div class="chart-header">
+            <h3>📈 Glucosa (últimos 7 días)</h3>
+          </div>
+          <canvas id="glucoseChart" width="600" height="200"></canvas>
+          <p class="chart-empty" id="chartEmpty">Aún no hay datos. Empieza a registrar tu glucosa.</p>
+        </div>
+      </section>
+
+      <!-- ===== PÁGINA: GLUCOSA ===== -->
+      <section class="page" id="page-glucose">
+        <div class="form-section">
+          <h2>🩸 Registrar Glucosa</h2>
+          <p class="form-desc">Ingresa el valor que marcó tu glucómetro</p>
+
+          <div class="input-group">
+            <label for="glucoseValue">Glucosa en sangre (mg/dL)</label>
+            <div class="value-input-wrapper">
+              <input type="number" id="glucoseValue" class="glucose-input" placeholder="0" min="20" max="600" inputmode="numeric">
+              <span class="input-unit">mg/dL</span>
+            </div>
+          </div>
+
+          <div class="glucose-quick-btns">
+            <button class="quick-glucose" data-value="70">70</button>
+            <button class="quick-glucose" data-value="100">100</button>
+            <button class="quick-glucose" data-value="120">120</button>
+            <button class="quick-glucose" data-value="140">140</button>
+            <button class="quick-glucose" data-value="180">180</button>
+            <button class="quick-glucose" data-value="200">200</button>
+            <button class="quick-glucose" data-value="250">250</button>
+            <button class="quick-glucose" data-value="300">300</button>
+          </div>
+
+          <div class="glucose-status" id="glucoseStatus"></div>
+
+          <div class="input-row">
+            <div class="input-group half">
+              <label for="glucoseDate">Fecha</label>
+              <input type="date" id="glucoseDate">
+            </div>
+            <div class="input-group half">
+              <label for="glucoseTime">Hora</label>
+              <input type="time" id="glucoseTime">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="glucoseNotes">Notas (opcional)</label>
+            <input type="text" id="glucoseNotes" placeholder="Ej: Antes del desayuno">
+          </div>
+
+          <button class="save-btn" id="saveGlucose">💾 Guardar registro</button>
+        </div>
+
+        <div class="history-section">
+          <h3>📋 Historial de hoy</h3>
+          <div id="glucoseTodayList" class="history-list"></div>
+
+          <details class="history-details">
+            <summary>📜 Ver historial completo</summary>
+            <div id="glucoseAllList" class="history-list"></div>
+          </details>
+        </div>
+      </section>
+
+      <!-- ===== PÁGINA: MEDICAMENTOS ===== -->
+      <section class="page" id="page-meds">
+        <div class="form-section">
+          <h2>💊 Mis Medicamentos</h2>
+          <p class="form-desc">Agrega tus medicamentos con horarios para recibir recordatorios</p>
+
+          <div class="input-group">
+            <label for="medName">Nombre del medicamento</label>
+            <input type="text" id="medName" placeholder="Ej: Insulina Lantus">
+          </div>
+
+          <div class="input-row">
+            <div class="input-group half">
+              <label for="medDosage">Dosis</label>
+              <input type="text" id="medDosage" placeholder="10" inputmode="decimal">
+            </div>
+            <div class="input-group half">
+              <label for="medUnit">Unidad</label>
+              <select id="medUnit">
+                <option value="UI">UI (unidades)</option>
+                <option value="mg">mg</option>
+                <option value="ml">ml</option>
+                <option value="gotas">gotas</option>
+                <option value="comprimido">comprimido(s)</option>
+                <option value="cápsula">cápsula(s)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label>Horarios</label>
+            <div id="medTimes">
+              <div class="time-row">
+                <input type="time" class="med-time" value="08:00">
+                <button class="remove-time" onclick="removeTime(this)">✕</button>
+              </div>
+              <div class="time-row">
+                <input type="time" class="med-time" value="20:00">
+                <button class="remove-time" onclick="removeTime(this)">✕</button>
+              </div>
+            </div>
+            <button class="small-btn" onclick="addTime()">➕ Agregar otro horario</button>
+          </div>
+
+          <div class="input-group">
+            <label for="medNotes">Notas (opcional)</label>
+            <input type="text" id="medNotes" placeholder="Ej: Tomar con comida">
+          </div>
+
+          <div class="input-group">
+            <label for="medWhatsApp">WhatsApp para recordatorios</label>
+            <div class="wa-input-wrapper">
+              <span class="wa-prefix">+</span>
+              <input type="tel" id="medWhatsApp" placeholder="521234567890" inputmode="numeric">
+            </div>
+            <p class="input-help">Ingresa el número con código de país (ej: 52 para México)</p>
+          </div>
+
+          <button class="save-btn" id="saveMed">💊 Agregar medicamento</button>
+        </div>
+
+        <div class="history-section">
+          <h3>📋 Mis medicamentos</h3>
+          <div id="medList" class="med-list"></div>
+        </div>
+      </section>
+
+      <!-- ===== PÁGINA: VITALES ===== -->
+      <section class="page" id="page-vitals">
+        <div class="form-section">
+          <h2>🌡️ Temperatura y Oxigenación</h2>
+          <p class="form-desc">Registra tu temperatura y saturación de oxígeno</p>
+
+          <div class="input-row">
+            <div class="input-group half">
+              <label for="tempValue">Temperatura (°C)</label>
+              <input type="number" id="tempValue" placeholder="36.5" step="0.1" min="34" max="42" inputmode="decimal">
+            </div>
+            <div class="input-group half">
+              <label for="oxygenValue">SpO₂ (%)</label>
+              <input type="number" id="oxygenValue" placeholder="98" min="50" max="100" inputmode="numeric">
+            </div>
+          </div>
+
+          <div class="vitals-quick">
+            <div class="vitals-quick-group">
+              <span>Temperatura rápida:</span>
+              <button class="quick-vital" data-temp="36.0">36.0</button>
+              <button class="quick-vital" data-temp="36.5">36.5</button>
+              <button class="quick-vital" data-temp="37.0">37.0</button>
+              <button class="quick-vital" data-temp="37.5">37.5</button>
+              <button class="quick-vital" data-temp="38.0">38.0</button>
+            </div>
+            <div class="vitals-quick-group">
+              <span>SpO₂ rápida:</span>
+              <button class="quick-vital" data-oxygen="95">95%</button>
+              <button class="quick-vital" data-oxygen="96">96%</button>
+              <button class="quick-vital" data-oxygen="97">97%</button>
+              <button class="quick-vital" data-oxygen="98">98%</button>
+              <button class="quick-vital" data-oxygen="99">99%</button>
+              <button class="quick-vital" data-oxygen="100">100%</button>
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group half">
+              <label for="vitalsDate">Fecha</label>
+              <input type="date" id="vitalsDate">
+            </div>
+            <div class="input-group half">
+              <label for="vitalsTime">Hora</label>
+              <input type="time" id="vitalsTime">
+            </div>
+          </div>
+
+          <button class="save-btn" id="saveVitals">💾 Guardar registro</button>
+        </div>
+
+        <div class="history-section">
+          <h3>📋 Historial de hoy</h3>
+          <div id="vitalsTodayList" class="history-list"></div>
+
+          <details class="history-details">
+            <summary>📜 Ver historial completo</summary>
+            <div id="vitalsAllList" class="history-list"></div>
+          </details>
+        </div>
+      </section>
+
+      <!-- ===== PÁGINA: CONFIGURACIÓN ===== -->
+      <section class="page" id="page-config">
+        <h2>⚙️ Configuración</h2>
+
+        <div class="config-section">
+          <h3>👤 Tu perfil</h3>
+          <div class="input-group">
+            <label for="configName">Nombre</label>
+            <input type="text" id="configName" value="Pepe">
+          </div>
+          <div class="input-group">
+            <label for="configWhatsApp">WhatsApp para recordatorios</label>
+            <input type="tel" id="configWhatsApp" placeholder="521234567890">
+            <p class="input-help">Código de país + número (ej: 521234567890)</p>
+          </div>
+        </div>
+
+        <div class="config-section">
+          <h3>🔔 Recordatorios automáticos</h3>
+          <div class="setting-row">
+            <span>Recordatorio de glucosa</span>
+            <select id="configGlucoseReminder">
+              <option value="0">Desactivado</option>
+              <option value="15">Cada 15 min</option>
+              <option value="30">Cada 30 min</option>
+              <option value="60">Cada hora</option>
+              <option value="120">Cada 2 horas</option>
+              <option value="1440" selected>Una vez al día</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="config-section">
+          <h3>📊 Gestionar datos</h3>
+          <button class="danger-btn" onclick="exportData()">📤 Exportar datos</button>
+          <button class="danger-btn" onclick="if(confirm('¿Estás seguro? Se borrarán TODOS tus datos.')){clearAllData()}">🗑️ Borrar todos los datos</button>
+        </div>
+
+        <div class="config-section about-section">
+          <h3>ℹ️ Acerca de</h3>
+          <p><strong>Salud Pepe</strong> v1.0</p>
+          <p>App creada con ❤️ para el control de salud diario.</p>
+          <p class="disclaimer">Esta app no reemplaza el consejo médico profesional. Siempre consulta con tu doctor.</p>
+        </div>
+
+        <button class="save-btn" onclick="saveConfig()">💾 Guardar configuración</button>
+      </section>
+
+    </main>
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <nav class="bottom-nav" id="bottomNav">
+      <button class="nav-btn active" data-page="dashboard" onclick="navigateTo('dashboard')">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Resumen</span>
+      </button>
+      <button class="nav-btn" data-page="glucose" onclick="navigateTo('glucose')">
+        <span class="nav-icon">🩸</span>
+        <span class="nav-label">Glucosa</span>
+      </button>
+      <button class="nav-btn" data-page="meds" onclick="navigateTo('meds')">
+        <span class="nav-icon">💊</span>
+        <span class="nav-label">Medicamentos</span>
+      </button>
+      <button class="nav-btn" data-page="vitals" onclick="navigateTo('vitals')">
+        <span class="nav-icon">🌡️</span>
+        <span class="nav-label">Vitales</span>
+      </button>
+    </nav>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast hidden"></div>
+
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(() => {
+        console.log('SW registrado');
+      }).catch(() => {});
+    }
+  </script>
+</body>
+</html>
