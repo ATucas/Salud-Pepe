@@ -15,10 +15,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Google Auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
       - name: Setup Firebase CLI
         uses: w9jds/setup-firebase@v1
-        with:
-          firebase_token: ${{ secrets.FIREBASE_TOKEN }}
 
       - name: Deploy Firestore Rules & Indexes
         run: firebase deploy --only firestore --project pepe-2026
