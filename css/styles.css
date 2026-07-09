@@ -120,6 +120,29 @@ body {
   font-size: 1.2rem;
   font-weight: 600;
 }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.sync-badge {
+  font-size: 1rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+.sync-online { background: rgba(255,255,255,0.2); }
+.sync-offline { background: rgba(231,111,81,0.3); }
+.sync-syncing { animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
 .header-btn {
   background: rgba(255,255,255,0.15);
   border: none;

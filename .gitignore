@@ -3,3 +3,6 @@ node_modules/
 .DS_Store
 Thumbs.db
 server.js
+
+# Local Netlify folder
+.netlify

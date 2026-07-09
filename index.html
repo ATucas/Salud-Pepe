@@ -11,6 +11,10 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="stylesheet" href="css/styles.css">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 
@@ -33,7 +37,10 @@
         <span id="headerIcon">📊</span>
         <h1 id="headerTitle">Resumen</h1>
       </div>
-      <button class="header-btn" id="configBtn" aria-label="Configuración">⚙️</button>
+      <div class="header-right">
+        <span id="syncStatus" class="sync-badge sync-online" title="Estado de conexión">☁️</span>
+        <button class="header-btn" id="configBtn" aria-label="Configuración">⚙️</button>
+      </div>
     </header>
 
     <!-- CONTENIDO PRINCIPAL -->
